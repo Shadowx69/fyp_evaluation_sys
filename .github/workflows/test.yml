@@ -18,30 +18,42 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4  # Updated to v4
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4  # Updated to v4
         with:
           node-version: 18
 
-      - name: Install Dependencies
-        run: npm install
+      - name: Install Backend Dependencies
+        run: |
+          cd backend
+          npm install
+
+      - name: Install Frontend Dependencies
+        run: |
+          cd frontend
+          npm install
 
       - name: Start Backend
         run: |
           cd backend
-          npm install
           npm start &
       
       - name: Start Frontend
         run: |
           cd frontend
-          npm install
           npm start &
 
       - name: Wait for App to Load
         run: sleep 10
+
+      - name: Install Test Dependencies
+        run: |
+          cd tests
+          npm install  # If tests have their own package.json
+        # OR if tests use the backend's node_modules:
+        # run: npm install  # If tests are at root with package.json
 
       - name: Run Tests
         run: node tests/runTests.js
