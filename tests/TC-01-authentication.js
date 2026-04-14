@@ -51,14 +51,12 @@ async function authenticationTest() {
         );
         await registerBtn.click();
 
-        // Wait for alert or navigation
-        await driver.sleep(3000);
+        // Step 4: Handle the alert popup
+        await driver.wait(until.alertIsPresent(), 5000);
+        let alert = await driver.switchTo().alert();
+        await alert.accept();
 
-        // Step 4: Navigate to login (might already be there)
-        let currentUrl = await driver.getCurrentUrl();
-        if (!currentUrl.includes("login")) {
-            await driver.get("http://localhost:3000/login");
-        }
+        // Wait for navigation to login page
         await driver.wait(until.urlContains("login"), 10000);
         await driver.sleep(1000);
 

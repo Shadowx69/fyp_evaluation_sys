@@ -8,6 +8,7 @@ dotenv.config();
 // Import models
 const User = require('./models/User');
 const Project = require('./models/Project');
+const Resource = require('./models/Resource');
 
 const seedTestData = async () => {
     try {
@@ -21,6 +22,7 @@ const seedTestData = async () => {
         await User.deleteMany({ email: { $regex: /@test\.com$/ } });
         await User.deleteMany({ email: { $regex: /^testuser/ } });
         await Project.deleteMany({ title: { $regex: /^(Test Project|Existing Test Project)/ } });
+        await Resource.deleteMany({ title: { $regex: /^Test/ } });
         console.log('🧹 Cleared existing test data');
 
         // Hash password
@@ -112,6 +114,20 @@ const seedTestData = async () => {
 
         await testProject.save();
         console.log('✅ Created test project for evaluations');
+
+        // Create a proposal resource (required for TC-02)
+        const coordinator = createdUsers.find(u => u.role === 'coordinator');
+        const proposalResource = new Resource({
+            title: 'Test Proposal Template',
+            description: 'Proposal submission form for testing',
+            fileUrl: 'http://localhost:5000/uploads/test-proposal.pdf',
+            phase: 'proposal',
+            deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+            uploadedBy: coordinator._id
+        });
+
+        await proposalResource.save();
+        console.log('✅ Created proposal resource for testing');
 
         console.log('\n🎉 Database seeding completed successfully!');
         console.log('\n📋 Test Credentials:');

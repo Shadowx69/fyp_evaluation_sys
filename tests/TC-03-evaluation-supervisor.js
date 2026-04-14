@@ -35,21 +35,29 @@ async function evaluationSupervisorTest() {
 
         // Wait for supervisor dashboard
         await driver.wait(until.urlContains("dashboard"), 10000);
-        await driver.sleep(2000);
+        await driver.sleep(3000);
 
         // Step 2: Find and click on "Project Hub" button
+        // Wait for the button to be both located and clickable
         let projectHubBtn = await driver.wait(
             until.elementLocated(By.xpath("//button[contains(., 'Project Hub')]")),
             10000
         );
-        await projectHubBtn.click();
+        
+        // Scroll to the button
+        await driver.executeScript("arguments[0].scrollIntoView(true);", projectHubBtn);
+        await driver.sleep(500);
+        
+        // Wait for it to be clickable
+        await driver.wait(until.elementIsVisible(projectHubBtn), 5000);
+        await driver.wait(until.elementIsEnabled(projectHubBtn), 5000);
+        
+        // Click using JavaScript to avoid interactability issues
+        await driver.executeScript("arguments[0].click();", projectHubBtn);
 
         await driver.sleep(2000);
 
-        // Step 3: We're now in the project details page
-        // The supervisor can view logs and project details here
-        // For this test, we'll just verify we reached the project page
-        
+        // Step 3: Verify we reached the project page
         let currentUrl = await driver.getCurrentUrl();
         if (currentUrl.includes("/projects/")) {
             console.log("✅ TC-03: Evaluation (Supervisor) Test PASSED");
