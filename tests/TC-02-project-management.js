@@ -95,7 +95,7 @@ async function projectManagementTest() {
                 await driver.actions().move({ origin: options[0] }).click().perform();
                 await driver.sleep(500);
             } else {
-                console.log("⚠️ No supervisor options found, continuing without selection");
+                console.log("⚠️ No supervisor options found, continuing with test data");
                 // Close dropdown by pressing Escape
                 await driver.actions().sendKeys(Key.ESCAPE).perform();
             }
@@ -130,20 +130,38 @@ async function projectManagementTest() {
             let alert = await driver.switchTo().alert();
             let alertText = await alert.getText();
             console.log("Alert text:", alertText);
+            
+            // Verify alert contains success message
+            if (!alertText.toLowerCase().includes("success")) {
+                throw new Error("Expected success alert but got: " + alertText);
+            }
+            
             await alert.accept();
         } catch (e) {
-            // No alert
+            console.log("No alert found, checking URL redirect");
         }
 
         await driver.sleep(2000);
 
-        // Verify success - check URL or page content
+        // Verify success - check URL redirected to dashboard
         let currentUrl = await driver.getCurrentUrl();
         console.log("Final URL:", currentUrl);
         
-        if (currentUrl.includes("dashboard") || currentUrl.includes("submit-proposal")) {
-            console.log("✅ TC-02: Project Management Test PASSED");
-            return true;
+        if (!currentUrl.includes("dashboard") && !currentUrl.includes("submit-proposal")) {
+            throw new Error("Expected dashboard or submit-proposal URL but got: " + currentUrl);
+        }
+
+        // If on dashboard, verify project appears
+        if (currentUrl.includes("dashboard")) {
+            await driver.sleep(2000);
+            // Check for project title or "No Active Project" message
+            let pageContent = await driver.findElements(
+                By.xpath("//*[contains(text(), 'Test Project') or contains(text(), 'Project')]")
+            );
+            
+            if (pageContent.length === 0) {
+                console.log("⚠️ Warning: Could not verify project on dashboard");
+            }
         }
 
         console.log("✅ TC-02: Project Management Test PASSED");

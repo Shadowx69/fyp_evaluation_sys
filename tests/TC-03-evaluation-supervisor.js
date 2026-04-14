@@ -59,9 +59,18 @@ async function evaluationSupervisorTest() {
 
         // Step 3: Verify we reached the project page
         let currentUrl = await driver.getCurrentUrl();
-        if (currentUrl.includes("/projects/")) {
-            console.log("✅ TC-03: Evaluation (Supervisor) Test PASSED");
-            return true;
+        if (!currentUrl.includes("/projects/")) {
+            throw new Error("Expected project details page but got: " + currentUrl);
+        }
+
+        // Verify project hub content loaded
+        await driver.sleep(1000);
+        let pageElements = await driver.findElements(
+            By.xpath("//*[contains(text(), 'Project') or contains(text(), 'Log') or contains(text(), 'Hub')]")
+        );
+        
+        if (pageElements.length === 0) {
+            throw new Error("Project hub page did not load properly");
         }
 
         console.log("✅ TC-03: Evaluation (Supervisor) Test PASSED");

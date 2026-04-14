@@ -54,24 +54,24 @@ async function schedulingTest() {
         // Step 4: Verify schedule created
         await driver.sleep(3000);
 
+        // Verify we're still on schedule page
+        let currentUrl = await driver.getCurrentUrl();
+        if (!currentUrl.includes("schedule-defense")) {
+            throw new Error("Expected to stay on schedule-defense page but got: " + currentUrl);
+        }
+
         // Check for success message or schedule table
         let scheduleCreated = await driver.findElements(
-            By.xpath("//*[contains(text(), 'Schedule') or contains(text(), 'Success')]")
+            By.xpath("//*[contains(text(), 'Schedule') or contains(text(), 'Success') or contains(text(), 'Generated')]")
         );
-
-        if (scheduleCreated.length > 0) {
-            console.log("✅ TC-04: Scheduling Test PASSED");
-            return true;
-        }
 
         // Alternative: Check if schedule table/list appears
         let scheduleTable = await driver.findElements(
             By.xpath("//table | //div[contains(@class, 'schedule')]")
         );
 
-        if (scheduleTable.length > 0) {
-            console.log("✅ TC-04: Scheduling Test PASSED");
-            return true;
+        if (scheduleCreated.length === 0 && scheduleTable.length === 0) {
+            throw new Error("Could not verify schedule creation - no success message or table found");
         }
 
         console.log("✅ TC-04: Scheduling Test PASSED");

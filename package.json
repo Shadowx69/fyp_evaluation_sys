@@ -1,0 +1,23 @@
+{
+  "name": "fyp-evaluation-system",
+  "version": "1.0.0",
+  "description": "FYP Evaluation System with Mutation Testing",
+  "scripts": {
+    "test": "cd tests && node runTests.js",
+    "test:mutation": "stryker run",
+    "seed": "cd server && node seedTestData.js",
+    "start:server": "cd server && npm start",
+    "start:client": "cd client && npm start"
+  },
+  "devDependencies": {
+    "@stryker-mutator/core": "^8.0.0"
+  },
+  "keywords": [
+    "testing",
+    "mutation-testing",
+    "selenium",
+    "e2e"
+  ],
+  "author": "",
+  "license": "ISC"
+}

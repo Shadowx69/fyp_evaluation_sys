@@ -81,6 +81,18 @@ async function authenticationTest() {
             return url.includes("dashboard");
         }, 10000);
 
+        // Additional validation: Verify we're on student dashboard specifically
+        let finalUrl = await driver.getCurrentUrl();
+        if (!finalUrl.includes("student-dashboard")) {
+            throw new Error("Expected student-dashboard but got: " + finalUrl);
+        }
+
+        // Verify dashboard content loaded
+        await driver.wait(
+            until.elementLocated(By.xpath("//*[contains(text(), 'Hello') or contains(text(), 'Dashboard')]")),
+            5000
+        );
+
         console.log("✅ TC-01: Authentication Test PASSED");
         return true;
 

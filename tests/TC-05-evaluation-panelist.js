@@ -38,13 +38,19 @@ async function evaluationPanelistTest() {
         await driver.sleep(2000);
 
         // Step 2: Verify we're on the panelist dashboard
-        // The panelist dashboard has tabs for different evaluation phases
-        // We'll check if the page loaded successfully
-        
         let currentUrl = await driver.getCurrentUrl();
-        if (currentUrl.includes("panelist-dashboard")) {
-            console.log("✅ TC-05: Evaluation (Panelist) Test PASSED");
-            return true;
+        if (!currentUrl.includes("panelist-dashboard")) {
+            throw new Error("Expected panelist-dashboard but got: " + currentUrl);
+        }
+
+        // Verify dashboard content loaded
+        await driver.sleep(1000);
+        let dashboardElements = await driver.findElements(
+            By.xpath("//*[contains(text(), 'Committee') or contains(text(), 'Evaluation') or contains(text(), 'Panelist')]")
+        );
+        
+        if (dashboardElements.length === 0) {
+            throw new Error("Panelist dashboard did not load properly");
         }
 
         console.log("✅ TC-05: Evaluation (Panelist) Test PASSED");
