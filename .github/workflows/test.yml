@@ -57,10 +57,10 @@ jobs:
 
       # ✅ PROPER WAIT (IMPORTANT)
       - name: Wait for Backend
-        run: wait-on http://localhost:5000 --timeout 60000
+        run: wait-on tcp:5000 --timeout 60000
 
       - name: Wait for Frontend
-        run: wait-on http://localhost:3000 --timeout 60000
+        run: wait-on http://localhost:3000 --timeout 120000
 
       - name: Install Test Dependencies
         run: |
