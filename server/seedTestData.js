@@ -43,6 +43,18 @@ const seedTestData = async () => {
                 }
             },
             {
+                buid: 'STU002',
+                email: 'student2@test.com',
+                password: hashedPassword,
+                role: 'student',
+                profile: {
+                    fullName: 'Test Student 2',
+                    department: 'Computer Science',
+                    specialization: 'Software Engineering',
+                    phone: '1234567899'
+                }
+            },
+            {
                 buid: 'SUP001',
                 email: 'supervisor@test.com',
                 password: hashedPassword,
@@ -92,14 +104,14 @@ const seedTestData = async () => {
         console.log('✅ Created test users:', createdUsers.map(u => u.email).join(', '));
 
         // Get user IDs
-        const student = createdUsers.find(u => u.role === 'student');
+        const student2 = createdUsers.find(u => u.email === 'student2@test.com');
         const supervisor = createdUsers.find(u => u.role === 'supervisor');
 
-        // Create a test project for evaluation tests
+        // Create a test project for evaluation tests (using student2, NOT student@test.com)
         const testProject = new Project({
             title: 'Existing Test Project',
             description: 'This is a pre-existing project for evaluation tests',
-            studentId: student._id,
+            studentId: student2._id,
             supervisorId: supervisor._id,
             status: 'supervisor_endorsed',
             hasMidtermPresentation: true,
@@ -113,7 +125,7 @@ const seedTestData = async () => {
         });
 
         await testProject.save();
-        console.log('✅ Created test project for evaluations');
+        console.log('✅ Created test project for evaluations (assigned to student2@test.com)');
 
         // Create a proposal resource (required for TC-02)
         const coordinator = createdUsers.find(u => u.role === 'coordinator');
