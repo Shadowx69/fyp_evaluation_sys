@@ -19,6 +19,7 @@ exports.createProject = async (req, res) => {
     }
 
     const { title, description, members } = req.body;
+    const supervisorId = req.body.supervisorId; // Get supervisor from form
     let project;
 
     // 3. Check for Existing Project (Handle Revision vs New)
@@ -56,6 +57,7 @@ exports.createProject = async (req, res) => {
         title,
         description,
         studentId: req.user.id,
+        supervisorId: supervisorId, // Add supervisor
         teamMembers: teamMembers,
         status: 'registered'
       });
