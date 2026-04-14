@@ -28,14 +28,23 @@ app.use(express.json());
 // Database Connection
 connectDB();
 
-// --- 2. Auth Route Definition ---
+// --- 2. Health Check Endpoint ---
+app.get('/', (req, res) => {
+    res.status(200).json({ status: 'ok', message: 'Server is running' });
+});
+
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'ok', message: 'Server is healthy' });
+});
+
+// --- 3. Auth Route Definition ---
 // (Kept inline as per your previous structure)
 const authRouter = require('express').Router();
 const authController = require('./controllers/authController');
 authRouter.post('/register', authController.register);
 authRouter.post('/login', authController.login);
 
-// --- 3. Mount Routes ---
+// --- 4. Mount Routes ---
 app.use('/api/auth', authRouter);
 app.use('/api/projects', projectRoutes);
 app.use('/api/schedules', scheduleRoutes);
@@ -48,7 +57,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/audit', auditRoutes);
 app.use('/api/dashboard', dashboardRoutes); // <--- Now properly defined
 
-// --- 4. Serve Static Files ---
+// --- 5. Serve Static Files ---
 // Uses 'path' to be safe across Windows/Mac/Linux
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
