@@ -15,91 +15,72 @@ async function authenticationTest() {
     try {
         console.log("🔄 Running TC-01: Authentication Test...");
 
-        // Generate unique email for registration
+        // Generate unique credentials
         const timestamp = Date.now();
         const testEmail = `testuser${timestamp}@test.com`;
         const testPassword = "Test@123";
         const testName = "Test User";
+        const testBuid = `TEST${timestamp}`;
 
         // Step 1: Navigate to Register page
         await driver.get("http://localhost:3000/register");
         await driver.wait(until.urlContains("register"), 10000);
+        await driver.sleep(1000);
 
         // Step 2: Fill registration form
         let nameField = await driver.wait(
-            until.elementLocated(By.xpath("//input[@name='name' or @placeholder='Full Name']")),
+            until.elementLocated(By.xpath("//input[@name='fullName']")),
             10000
         );
         await nameField.sendKeys(testName);
 
-        let emailField = await driver.findElement(
-            By.xpath("//input[@type='email' or @name='email']")
-        );
+        let buidField = await driver.findElement(By.xpath("//input[@name='buid']"));
+        await buidField.sendKeys(testBuid);
+
+        let emailField = await driver.findElement(By.xpath("//input[@name='email']"));
         await emailField.sendKeys(testEmail);
 
-        let passwordField = await driver.findElement(
-            By.xpath("//input[@type='password' and (@name='password' or @placeholder='Password')]")
-        );
+        let passwordField = await driver.findElement(By.xpath("//input[@name='password']"));
         await passwordField.sendKeys(testPassword);
 
-        // Select role (Student)
-        let roleDropdown = await driver.findElement(
-            By.xpath("//div[contains(@class,'MuiSelect-select')]")
-        );
-        await roleDropdown.click();
-
-        await driver.sleep(500);
-
-        let studentOption = await driver.wait(
-            until.elementLocated(By.xpath("//li[@role='option' and contains(., 'Student')]")),
-            5000
-        );
-        await studentOption.click();
+        // Role is already set to 'student' by default, no need to change
 
         // Step 3: Submit registration
         let registerBtn = await driver.findElement(
-            By.xpath("//button[contains(., 'Register') or contains(., 'Sign Up')]")
+            By.xpath("//button[@type='submit' and contains(., 'Register')]")
         );
         await registerBtn.click();
 
-        // Wait for registration success (redirect to login or dashboard)
-        await driver.sleep(2000);
+        // Wait for alert or navigation
+        await driver.sleep(3000);
 
-        // Step 4: Login with registered credentials
+        // Step 4: Navigate to login (might already be there)
         let currentUrl = await driver.getCurrentUrl();
-        
         if (!currentUrl.includes("login")) {
             await driver.get("http://localhost:3000/login");
         }
-
         await driver.wait(until.urlContains("login"), 10000);
+        await driver.sleep(1000);
 
+        // Step 5: Login with registered credentials
         let loginEmailField = await driver.wait(
-            until.elementLocated(By.xpath("//input[@type='text' or @type='email']")),
+            until.elementLocated(By.xpath("//input[@name='email']")),
             10000
         );
         await loginEmailField.sendKeys(testEmail);
 
-        let loginPasswordField = await driver.findElement(
-            By.xpath("//input[@type='password']")
-        );
+        let loginPasswordField = await driver.findElement(By.xpath("//input[@name='password']"));
         await loginPasswordField.sendKeys(testPassword);
 
         let loginBtn = await driver.findElement(
-            By.xpath("//button[contains(., 'Sign In') or contains(., 'Login')]")
+            By.xpath("//button[@type='submit' and contains(., 'Sign In')]")
         );
         await loginBtn.click();
 
-        // Step 5: Verify dashboard redirection
+        // Step 6: Verify dashboard redirection
         await driver.wait(async () => {
             let url = await driver.getCurrentUrl();
-            return (
-                url.includes("student-dashboard") ||
-                url.includes("coordinator-dashboard") ||
-                url.includes("supervisor-dashboard") ||
-                url.includes("panelist-dashboard") ||
-                url.includes("dashboard")
-            );
+            return url.includes("dashboard");
         }, 10000);
 
         console.log("✅ TC-01: Authentication Test PASSED");
